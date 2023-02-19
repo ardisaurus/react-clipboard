@@ -1,0 +1,2 @@
+# react-clipboard
+React clipboard
