@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { useLocalStorage } from "./useStorage";
 import uuid from "react-uuid";
@@ -30,10 +30,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Vite + React</h1>
-      {clipboard.length > 0 ? (
-        <button onClick={() => setClipboard([])}>Clear</button>
-      ) : null}
+      <h1>React Clipboard</h1>
       {clipboard.map((item) => (
         <div key={item.id}>
           {item.name} -{" "}
@@ -46,7 +43,14 @@ function App() {
           <button onClick={() => removeItem(item.id)}>Remove</button>
         </div>
       ))}
-      <div>---Add---</div>
+      {clipboard.length > 0 ? (
+        <Fragment>
+          <hr />
+          <button onClick={() => setClipboard([])}>Clear</button>
+        </Fragment>
+      ) : null}
+      <hr />
+      <div>Add New Item</div>
       <div>
         <label>Name </label>
         <input
