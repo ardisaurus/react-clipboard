@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
+import { ToastContainer, toast } from "react-toastify";
 import {
   MantineProvider,
   Switch,
@@ -42,7 +43,8 @@ function App() {
     resetForm();
   };
 
-  const removeItem = (id) => {
+  const removeItem = ({ e, id }) => {
+    e.stopPropagation();
     const items = clipboard.filter((item) => item.id !== id);
     setClipboard(items);
   };
@@ -52,8 +54,22 @@ function App() {
     setNewItemName("");
   };
 
+  const notify = () => toast.info("Item copied");
+
   return (
     <div>
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar={true}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
       <MantineProvider
         theme={{ colorScheme: scheme }}
         withGlobalStyles
@@ -127,6 +143,7 @@ function App() {
                 cursor: "pointer",
               }}
               key={item.id}
+              onClick={() => notify()}
             >
               <CopyToClipboard text={item.value}>
                 <Card shadow="sm" padding="lg" radius="md" withBorder>
@@ -140,7 +157,7 @@ function App() {
                       <ActionIcon
                         variant="light"
                         color="red"
-                        onClick={() => removeItem(item.id)}
+                        onClick={(e) => removeItem({ e, id: item.id })}
                       >
                         <IconTrash size="1rem" />
                       </ActionIcon>
