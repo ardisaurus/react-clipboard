@@ -11,11 +11,15 @@ import {
   Card,
   ActionIcon,
   Badge,
+  ColorSwatch,
   Group,
+  useMantineTheme,
   Modal,
   Input,
   Button,
   Tooltip,
+  CheckIcon,
+  rem,
 } from "@mantine/core";
 import { IconCopy, IconTrash, IconPlus, IconX } from "@tabler/icons-react";
 import { useLocalStorage } from "./useStorage";
@@ -25,9 +29,22 @@ import "./App.css";
 function App() {
   const [newItemName, setNewItemName] = useState("");
   const [newItemValue, setNewItemValue] = useState("");
+  const [newItemColor, setNewItemColor] = useState("blue");
   const [clipboard, setClipboard] = useLocalStorage("clipboard", []);
   const [scheme, setScheme] = useLocalStorage("scheme", "light");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const theme = useMantineTheme();
+  const swatches = Object.keys(theme.colors).map((color) => (
+    <ColorSwatch
+      key={color}
+      color={theme.colors[color][6]}
+      onClick={() => {
+        setNewItemColor(color);
+      }}
+    >
+      {color === newItemColor && <CheckIcon width={rem(10)} />}
+    </ColorSwatch>
+  ));
 
   const handleToggle = () => {
     const nextScheme = scheme === "dark" ? "light" : "dark";
@@ -37,7 +54,12 @@ function App() {
   const addItem = () => {
     const items = [
       ...clipboard,
-      { id: uuid(), name: newItemName, value: newItemValue },
+      {
+        id: uuid(),
+        name: newItemName,
+        value: newItemValue,
+        color: newItemColor,
+      },
     ];
     setClipboard(items);
     resetForm();
@@ -52,6 +74,7 @@ function App() {
   const resetForm = () => {
     setNewItemValue("");
     setNewItemName("");
+    setNewItemColor("blue");
   };
 
   const notify = () => toast.info("Item copied");
@@ -110,6 +133,12 @@ function App() {
               onChange={(e) => setNewItemValue(e.target.value)}
             />
           </div>
+          <div style={{ marginTop: "1em" }}>
+            <label>Badge Color</label>
+            <Group position="left" spacing="xs">
+              {swatches}
+            </Group>
+          </div>
 
           <Group position="right" mt="md" mb="xs">
             <Button
@@ -152,7 +181,7 @@ function App() {
                     <Text weight={500}>{item.value}</Text>
                   </Group>
                   <Group position="apart">
-                    <Badge color="pink">{item.name}</Badge>
+                    <Badge color={item.color || "blue"}>{item.name}</Badge>
                     <Group position="right">
                       <ActionIcon
                         variant="light"
